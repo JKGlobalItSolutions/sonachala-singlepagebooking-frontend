@@ -35,6 +35,7 @@ interface Room {
   perChildPrice?: number;
   discount?: number;
   taxPercentage?: number;
+  commission?: number;
   maxGuests?: number;
   roomSize?: string;
   availability?: string;
@@ -108,8 +109,12 @@ export const ReservationSummary = ({
   const taxPercentage = selectedRoom?.taxPercentage || 18;
   const taxes = Math.round(subtotal * (taxPercentage / 100));
 
+  // Calculate commission using room's commission percentage
+  const commissionPercentage = selectedRoom?.commission || 0;
+  const commission = Math.round(subtotal * (commissionPercentage / 100));
+
   // Calculate grand total
-  const total = subtotal + taxes - discount;
+  const total = subtotal + taxes + commission - discount;
 
   const handleProceedToPay = async () => {
     // Validate required data
@@ -388,6 +393,13 @@ export const ReservationSummary = ({
               <span className="text-sm">Taxes & Fees ({taxPercentage}%)</span>
               <span className="font-medium">₹{taxes.toLocaleString()}</span>
             </div>
+
+            {commission > 0 && (
+              <div className="flex justify-between">
+                <span className="text-sm">Commission ({commissionPercentage}%)</span>
+                <span className="font-medium">₹{commission.toLocaleString()}</span>
+              </div>
+            )}
 
             {discount > 0 && (
               <div className="flex justify-between text-success">
