@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { io, Socket } from "socket.io-client";
 import HotelHeader from "./HotelHeader";
 import { SearchBar } from "./SearchBar";
 import { ReservationSummary } from "./ReservationSummary";
@@ -92,6 +93,7 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [roomsLoading, setRoomsLoading] = useState(true);
   const [roomsError, setRoomsError] = useState<string | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   // Calculate max available rooms
   const maxAvailableRooms = Math.max(...roomsData.map(r => r.availableCount || 0), 0);
@@ -111,6 +113,19 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
     return result;
   };
 
+  // Function to fetch rooms data
+  const fetchRooms = async () => {
+    try {
+      const res = await axios.get(`${apiBase}/rooms/hotel/${hotelId}`);
+      setRoomsData(res.data);
+      setRoomsError(null);
+    } catch (err: any) {
+      setRoomsError(err.response?.data?.message || "Failed to fetch rooms");
+    } finally {
+      setRoomsLoading(false);
+    }
+  };
+
 
 
 
@@ -122,19 +137,56 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
 
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const res = await axios.get(`${apiBase}/rooms/hotel/${hotelId}`);
-        setRoomsData(res.data);
-        setRoomsError(null);
-      } catch (err: any) {
-        setRoomsError(err.response?.data?.message || "Failed to fetch rooms");
-      } finally {
-        setRoomsLoading(false);
-      }
-    };
     fetchRooms();
+
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchRooms();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [hotelId]);
+
+  // Socket.IO connection for real-time updates
+  useEffect(() => {
+    const newSocket = io(apiBase);
+    setSocket(newSocket);
+
+    // Listen for room updates
+    newSocket.on('roomCreated', (data) => {
+      if (data.hotelId === hotelId) {
+        toast({
+          title: "New room added!",
+          description: "Room inventory has been updated.",
+        });
+        fetchRooms();
+      }
+    });
+
+    newSocket.on('roomUpdated', (data) => {
+      if (data.hotelId === hotelId) {
+        toast({
+          title: "Room updated!",
+          description: "Room information has been updated.",
+        });
+        fetchRooms();
+      }
+    });
+
+    newSocket.on('roomDeleted', (data) => {
+      if (data.hotelId === hotelId) {
+        toast({
+          title: "Room removed!",
+          description: "A room has been removed from inventory.",
+        });
+        fetchRooms();
+      }
+    });
+
+    return () => {
+      newSocket.close();
+    };
+  }, [hotelId, apiBase]);
 
   useEffect(() => {
     const totalGuests = adults + children;
