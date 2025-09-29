@@ -41,6 +41,7 @@ interface Room {
   image?: string;
   createdAt?: string;
   updatedAt?: string;
+  availableCount?: number;
 }
 
 export const HotelBooking = () => {
@@ -446,6 +447,7 @@ console.log(guestInfo);
                       capacity={room.maxGuests}
                       bedType={room.bedType}
                       isPopular={true}
+                      availableCount={room.availableCount}
                       onBookNow={handleBookNow}
                     />
                   ))

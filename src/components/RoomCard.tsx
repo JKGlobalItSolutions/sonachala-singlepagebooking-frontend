@@ -14,6 +14,7 @@ interface RoomCardProps {
   capacity: number;
   bedType: string;
   isPopular?: boolean;
+  availableCount?: number;
   onBookNow: (roomId: string) => void;
 }
 
@@ -28,6 +29,7 @@ export const RoomCard = ({
   capacity,
   bedType,
   isPopular,
+  availableCount,
   onBookNow,
 }: RoomCardProps) => {
   const getFeatureIcon = (feature: string) => {
@@ -54,12 +56,12 @@ export const RoomCard = ({
             alt={name}
             className="w-full h-48 md:h-full object-cover"
           />
-          {isPopular && (
+          {availableCount !== undefined && availableCount > 0 && (
             <Badge 
               variant="destructive" 
               className="absolute top-3 left-3 bg-destructive text-destructive-foreground"
             >
-              Only 1 left
+              Only {availableCount} left
             </Badge>
           )}
         </div>
