@@ -88,6 +88,7 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [confirmationId, setConfirmationId] = useState<string>("");
 
   const [roomsData, setRoomsData] = useState<Room[]>([]);
+  const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [roomsLoading, setRoomsLoading] = useState(true);
   const [roomsError, setRoomsError] = useState<string | null>(null);
 
@@ -130,6 +131,14 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
     };
     fetchRooms();
   }, [hotelId]);
+
+  useEffect(() => {
+    const totalGuests = adults + children;
+    const filtered = roomsData.filter(
+      (room) => room.availability === "Available" && room.maxGuests >= totalGuests
+    );
+    setFilteredRooms(filtered);
+  }, [roomsData, adults, children]);
 
   const calculateNights = () => {
     if (checkIn && checkOut) {
@@ -422,11 +431,9 @@ console.log(guestInfo);
                 <div>Loading rooms...</div>
               ) : roomsError ? (
                 <div>{roomsError}</div>
-              ) : roomsData.length > 0 ? (
+              ) : filteredRooms.length > 0 ? (
                 // Filter available rooms first
-                roomsData
-                  .filter(room => room.availability === "Available")
-                  .map((room) => (
+                filteredRooms.map((room) => (
                     <RoomCard
                       key={room._id}
                       id={room._id}
@@ -443,16 +450,16 @@ console.log(guestInfo);
                     />
                   ))
               ) : (
-                <div>No available rooms found.</div>
+                <div>No available rooms found for the selected criteria.</div>
               )}
               
               {/* Show message if no available rooms */}
               {!roomsLoading && !roomsError && roomsData.length > 0 && 
-               roomsData.filter(room => room.availability === "Available").length === 0 && (
+               filteredRooms.length === 0 && (
                 <div className="text-center p-6 bg-gray-50 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Available Rooms</h3>
                   <p className="text-gray-600">
-                    All rooms are currently booked. Please try different dates or check back later.
+                    No rooms match the selected number of guests. Please adjust the number of guests or try different dates.
                   </p>
                 </div>
               )}
