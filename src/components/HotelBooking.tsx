@@ -93,6 +93,9 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [roomsLoading, setRoomsLoading] = useState(true);
   const [roomsError, setRoomsError] = useState<string | null>(null);
 
+  // Calculate max available rooms
+  const maxAvailableRooms = Math.max(...roomsData.map(r => r.availableCount || 0), 0);
+
   // Use the same hotelId as in HotelHeader
   const hotelId = import.meta.env.VITE_HOTEL_ID;
 
@@ -136,10 +139,10 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   useEffect(() => {
     const totalGuests = adults + children;
     const filtered = roomsData.filter(
-      (room) => room.availability === "Available" && room.maxGuests >= totalGuests
+      (room) => room.availability === "Available" && room.maxGuests >= totalGuests && (room.availableCount || 0) >= rooms
     );
     setFilteredRooms(filtered);
-  }, [roomsData, adults, children]);
+  }, [roomsData, adults, children, rooms]);
 
   const calculateNights = () => {
     if (checkIn && checkOut) {
@@ -422,6 +425,7 @@ console.log(guestInfo);
           onAdultsChange={setAdults}
           onChildrenChange={setChildren}
           onSearch={handleSearch}
+          maxRooms={maxAvailableRooms}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -454,14 +458,19 @@ console.log(guestInfo);
               ) : (
                 <div>No available rooms found for the selected criteria.</div>
               )}
-              
+
               {/* Show message if no available rooms */}
-              {!roomsLoading && !roomsError && roomsData.length > 0 && 
+              {!roomsLoading && !roomsError && roomsData.length > 0 &&
                filteredRooms.length === 0 && (
                 <div className="text-center p-6 bg-gray-50 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No Available Rooms</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {maxAvailableRooms < rooms ? "Insufficient Room Availability" : "No Available Rooms"}
+                  </h3>
                   <p className="text-gray-600">
-                    No rooms match the selected number of guests. Please adjust the number of guests or try different dates.
+                    {maxAvailableRooms < rooms
+                      ? `Only ${maxAvailableRooms} rooms left. Please reduce the number of rooms.`
+                      : "No rooms match the selected number of guests. Please adjust the number of guests or try different dates."
+                    }
                   </p>
                 </div>
               )}

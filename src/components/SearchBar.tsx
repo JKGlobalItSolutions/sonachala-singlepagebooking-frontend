@@ -16,6 +16,7 @@ interface SearchBarProps {
   onAdultsChange: (adults: number) => void;
   onChildrenChange: (children: number) => void;
   onSearch: () => void;
+  maxRooms?: number;
 }
 
 export const SearchBar = ({
@@ -30,6 +31,7 @@ export const SearchBar = ({
   onAdultsChange,
   onChildrenChange,
   onSearch,
+  maxRooms,
 }: SearchBarProps) => {
   const calculateNights = () => {
     if (checkIn && checkOut) {
@@ -88,11 +90,12 @@ export const SearchBar = ({
               id="rooms"
               type="number"
               min="1"
+              max={maxRooms}
               value={rooms}
-              onChange={(e) => onRoomsChange(Math.max(1, Number(e.target.value)))}
+              onChange={(e) => onRoomsChange(Math.max(1, Math.min(maxRooms || Infinity, Number(e.target.value))))}
               className="w-16 text-center"
             />
-            <Button variant="outline" size="sm" onClick={() => onRoomsChange(rooms + 1)}>+</Button>
+            <Button variant="outline" size="sm" onClick={() => onRoomsChange(Math.min(maxRooms || Infinity, rooms + 1))} disabled={rooms >= (maxRooms || Infinity)}>+</Button>
           </div>
         </div>
         
