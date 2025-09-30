@@ -387,16 +387,7 @@ export const PaymentSection = ({
           ))}
         </div>
 
-        <div className="space-y-4 mb-6">
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="terms" className="text-sm cursor-pointer">
-              I have read and agree to the{" "}
-              <span className="text-primary underline cursor-pointer">
-                Reservation Policy and Terms & Conditions
-              </span>
-            </Label>
-          </div>
-        </div>
+       
 
         <div className="bg-gradient-to-r from-luxury/10 to-luxury/5 p-4 rounded-lg mb-6">
           <div className="flex justify-between items-center">
