@@ -89,6 +89,7 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [confirmationId, setConfirmationId] = useState<string>("");
 
+  const [lastUpdated, setLastUpdated] = useState(Date.now());
   const [roomsData, setRoomsData] = useState<Room[]>([]);
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [unavailableRooms, setUnavailableRooms] = useState<Room[]>([]);
@@ -116,9 +117,13 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   };
 
   // Function to fetch rooms data
-  const fetchRooms = async () => {
+  const fetchRooms = async (checkInDate?: string, checkOutDate?: string) => {
     try {
-      const res = await axios.get(`${apiBase}/rooms/hotel/${hotelId}`);
+      const params = new URLSearchParams();
+      if (checkInDate) params.append('checkIn', checkInDate);
+      if (checkOutDate) params.append('checkOut', checkOutDate);
+
+      const res = await axios.get(`${apiBase}/rooms/hotel/${hotelId}`, { params });
       setRoomsData(res.data);
       setRoomsError(null);
     } catch (err: any) {
@@ -139,15 +144,19 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
 
 
   useEffect(() => {
-    fetchRooms();
+    if (checkIn && checkOut) {
+      fetchRooms(checkIn, checkOut);
+    }
 
     // Auto-refresh every 30 seconds
     const interval = setInterval(() => {
-      fetchRooms();
+      if (checkIn && checkOut) {
+        fetchRooms(checkIn, checkOut);
+      }
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [hotelId]);
+  }, [hotelId, checkIn, checkOut, lastUpdated]);
 
   // Socket.IO connection for real-time updates
   useEffect(() => {
@@ -161,7 +170,7 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
           title: "New room added!",
           description: "Room inventory has been updated.",
         });
-        fetchRooms();
+        setLastUpdated(Date.now());
       }
     });
 
@@ -171,7 +180,7 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
           title: "Room updated!",
           description: "Room information has been updated.",
         });
-        fetchRooms();
+        setLastUpdated(Date.now());
       }
     });
 
@@ -181,7 +190,7 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
           title: "Room removed!",
           description: "A room has been removed from inventory.",
         });
-        fetchRooms();
+        setLastUpdated(Date.now());
       }
     });
 
@@ -257,6 +266,8 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
       title: "Searching rooms...",
       description: "Finding the best available rooms for your dates",
     });
+    setRoomsLoading(true);
+    fetchRooms(checkIn, checkOut);
   };
 
   const handleBookNow = (roomId: string) => {
