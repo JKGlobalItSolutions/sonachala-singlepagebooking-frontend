@@ -8,10 +8,11 @@ import { RoomCard } from "./RoomCard";
 import { GuestForm } from "./GuestForm";
 import { PaymentSection } from "./PaymentSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Shield, Clock, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapPin, Shield, Clock, Users, Camera, Map, Info, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-import HotelSection from "./HotelSection";
+
 
 
 
@@ -635,55 +636,190 @@ console.log(guestInfo);
 
 
 
-            {/* Hotel Policies */}
+            {/* Hotel Information Tabs */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl font-bold text-premium">
-                  Reservation Policy and Terms & Conditions
+                  Hotel Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3">
-                    <Shield className="w-5 h-5 text-luxury mt-1" />
-                    <div>
-                      <h4 className="font-semibold">Cancellation Policy</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Free cancellation up to 24 hours before check-in. After that, one night's charge applies.
-                      </p>
+              <CardContent>
+                <Tabs defaultValue="gallery" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="gallery" className="flex items-center gap-2">
+                      <Camera className="w-4 h-4" />
+                      Photo Gallery
+                    </TabsTrigger>
+                    <TabsTrigger value="property" className="flex items-center gap-2">
+                      <Info className="w-4 h-4" />
+                      Property Info
+                    </TabsTrigger>
+                    <TabsTrigger value="facilities" className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Facilities
+                    </TabsTrigger>
+                    <TabsTrigger value="location" className="flex items-center gap-2">
+                      <Map className="w-4 h-4" />
+                      Location
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="gallery" className="mt-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {[
+                        "/assets/deluxe-room.jpg",
+                        "/assets/executive-room.jpg",
+                        "/assets/manor-suite.jpg",
+                        "/assets/signature-room.jpg",
+                        "/assets/standard-room.jpg",
+                        "/assets/studio-suite.jpg"
+                      ].map((image, index) => (
+                        <div key={index} className="aspect-square overflow-hidden rounded-lg">
+                          <img
+                            src={image}
+                            alt={`Hotel gallery image ${index + 1}`}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer"
+                            onClick={() => window.open(image, '_blank')}
+                          />
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-luxury mt-1" />
-                    <div>
-                      <h4 className="font-semibold">Check-in/out</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Check-in: 3:00 PM | Check-out: 12:00 PM. Early check-in subject to availability.
-                      </p>
+                  </TabsContent>
+
+                  <TabsContent value="property" className="mt-6">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <h3 className="font-semibold text-lg mb-3">Hotel Overview</h3>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Hotel Type:</span>
+                              <span className="font-medium">Boutique Hotel</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Established:</span>
+                              <span className="font-medium">2015</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Total Rooms:</span>
+                              <span className="font-medium">25</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Rating:</span>
+                              <span className="font-medium">4.5/5</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-3">Services</h3>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                              <span>24/7 Front Desk</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                              <span>Room Service</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                              <span>Laundry Service</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                              <span>Concierge</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Users className="w-5 h-5 text-luxury mt-1" />
-                    <div>
-                      <h4 className="font-semibold">Guest Policy</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Maximum occupancy as specified per room. Additional guests may incur extra charges.
-                      </p>
+                  </TabsContent>
+
+                  <TabsContent value="facilities" className="mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h3 className="font-semibold text-lg mb-3">Room Facilities</h3>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          {[
+                            "24/7 Hot water",
+                            "AC",
+                            "Attached Bathroom",
+                            "Cable TV",
+                            "Direct Phone",
+                            "Double/Twin Beds",
+                            "High speed WiFi internet",
+                            "Iron with ironing board (on request)",
+                            "LCD TV",
+                            "Smoke Detector Alarms",
+                            "Tea/Coffee Maker",
+                            "24/7 room service"
+                          ].map((facility, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <CheckCircle className="w-3 h-3 text-green-500" />
+                              <span>{facility}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg mb-3">Hotel Facilities</h3>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          {[
+                            "Complimentary Packaged Water Bottles",
+                            "Direct-Dialing Phone",
+                            "Hair Dryer",
+                            "High Speed Wi-Fi Internet(chargable)",
+                            "Kettle",
+                            "Marble Flooring",
+                            "Shower",
+                            "Sound proof windows",
+                            "Study Table",
+                            "Work Desk",
+                            "Complimentary toiletries",
+                            "Internet"
+                          ].map((facility, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <CheckCircle className="w-3 h-3 text-green-500" />
+                              <span>{facility}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-luxury mt-1" />
-                    <div>
-                      <h4 className="font-semibold">Location</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Centrally located in Friends Colony with easy access to major attractions and business districts.
-                      </p>
+                  </TabsContent>
+
+                  <TabsContent value="location" className="mt-6">
+                    <div className="space-y-4">
+                      <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <Map className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                          <p className="text-gray-600">Interactive Map</p>
+                          <p className="text-sm text-gray-500">12°16'48.8"N 79°04'16.7"E</p>
+                          <p className="text-sm text-gray-500">Tamil Nadu, Tiruvannamalai</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <h4 className="font-semibold mb-2">Address</h4>
+                          <p className="text-muted-foreground">
+                            Friends Colony<br />
+                            Tiruvannamalai, Tamil Nadu<br />
+                            India - 606601
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2">Nearby Attractions</h4>
+                          <div className="space-y-1 text-muted-foreground">
+                            <p>• Arunachaleswarar Temple (2.5 km)</p>
+                            <p>• Girivalam Path (1.8 km)</p>
+                            <p>• Ramana Ashram (3.2 km)</p>
+                            <p>• Local Market (1.2 km)</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
 
@@ -691,7 +827,7 @@ console.log(guestInfo);
 
 
 
-<HotelSection />
+
 
 
 
@@ -738,6 +874,130 @@ console.log(guestInfo);
 
 
           
+        </div>
+
+        {/* Reservation Policy and Terms & Conditions - Bottom Section */}
+        <div className="mt-12 pt-8 border-t">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-premium flex items-center gap-2">
+                <Shield className="w-6 h-6" />
+                Reservation Policy and Terms & Conditions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Shield className="w-5 h-5 text-luxury mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-base mb-2">Cancellation Policy</h4>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>• Free cancellation up to 24 hours before check-in</p>
+                        <p>• After that, one night's charge applies</p>
+                        <p>• No-show will result in full payment</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-luxury mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-base mb-2">Check-in/Check-out</h4>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>• Check-in: 3:00 PM</p>
+                        <p>• Check-out: 12:00 PM</p>
+                        <p>• Early check-in subject to availability</p>
+                        <p>• Late check-out may incur extra charges</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <Users className="w-5 h-5 text-luxury mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-base mb-2">Guest Policy</h4>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>• Maximum occupancy as specified per room</p>
+                        <p>• Additional guests may incur extra charges</p>
+                        <p>• Valid ID required at check-in</p>
+                        <p>• Children under 12 stay free with parents</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-luxury mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-base mb-2">Location & Access</h4>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>• Centrally located in Friends Colony</p>
+                        <p>• Easy access to major attractions</p>
+                        <p>• Business districts nearby</p>
+                        <p>• Public transport available</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-base">Payment Terms</h4>
+                    <div className="text-sm text-muted-foreground space-y-2">
+                      <p>• Full payment required for booking confirmation</p>
+                      <p>• All major credit cards accepted</p>
+                      <p>• UPI and digital payments supported</p>
+                      <p>• Payment proof required for verification</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-base">Additional Policies</h4>
+                    <div className="text-sm text-muted-foreground space-y-2">
+                      <p>• No pets allowed</p>
+                      <p>• Smoking prohibited in rooms</p>
+                      <p>• Outside visitors must register</p>
+                      <p>• Damage charges apply for violations</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-base">Contact Information</h4>
+                    <div className="text-sm text-muted-foreground space-y-2">
+                      <p>• Phone: +91-XXXX-XXXXXX</p>
+                      <p>• Email: info@sonachalahotel.com</p>
+                      <p>• 24/7 Front Desk Support</p>
+                      <p>• Emergency contact available</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <p className="text-sm text-blue-800 font-medium mb-2">Need Help?</p>
+                    <p className="text-sm text-blue-600">
+                      For any questions about our policies or special requests,
+                      please contact our guest relations team.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t">
+                <div className="text-center text-sm text-muted-foreground">
+                  <p className="mb-2">
+                    By proceeding with your booking, you agree to our Terms & Conditions and Privacy Policy.
+                  </p>
+                  <p>
+                    All bookings are subject to availability and hotel confirmation.
+                    Rates are subject to change without prior notice.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
