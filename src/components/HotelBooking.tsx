@@ -99,6 +99,8 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
   const [roomsError, setRoomsError] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
 
+
+
   // Calculate max available rooms
   const maxAvailableRooms = Math.max(...roomsData.map(r => r.availableCount || 0), 0);
 
@@ -697,10 +699,8 @@ console.log(guestInfo);
 
 
 
-            
 
 
-            
           </div>
 
 
