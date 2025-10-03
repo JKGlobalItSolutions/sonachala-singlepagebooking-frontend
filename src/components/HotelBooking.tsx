@@ -91,6 +91,8 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
 
   const [roomsData, setRoomsData] = useState<Room[]>([]);
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
+  const [unavailableRooms, setUnavailableRooms] = useState<Room[]>([]);
+  const [soldOutRooms, setSoldOutRooms] = useState<Room[]>([]);
   const [roomsLoading, setRoomsLoading] = useState(true);
   const [roomsError, setRoomsError] = useState<string | null>(null);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -190,10 +192,18 @@ const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
 
   useEffect(() => {
     const totalGuests = adults + children;
-    const filtered = roomsData.filter(
+    const availableRooms = roomsData.filter(
       (room) => room.availability === "Available" && room.maxGuests >= totalGuests && (room.availableCount || 0) >= rooms
     );
-    setFilteredRooms(filtered);
+    const unavailableRooms = roomsData.filter(
+      (room) => room.availability === "Available" && room.maxGuests >= totalGuests && (room.availableCount || 0) < rooms && (room.availableCount || 0) > 0
+    );
+    const soldOutRooms = roomsData.filter(
+      (room) => room.availability === "Available" && room.maxGuests >= totalGuests && (room.availableCount || 0) === 0
+    );
+    setFilteredRooms(availableRooms);
+    setUnavailableRooms(unavailableRooms);
+    setSoldOutRooms(soldOutRooms);
   }, [roomsData, adults, children, rooms]);
 
   const calculateNights = () => {
@@ -488,9 +498,10 @@ console.log(guestInfo);
                 <div>Loading rooms...</div>
               ) : roomsError ? (
                 <div>{roomsError}</div>
-              ) : filteredRooms.length > 0 ? (
-                // Filter available rooms first
-                filteredRooms.map((room) => (
+              ) : (filteredRooms.length > 0 || unavailableRooms.length > 0 || soldOutRooms.length > 0) ? (
+                <>
+                  {/* Available Rooms */}
+                  {filteredRooms.map((room) => (
                     <RoomCard
                       key={room._id}
                       id={room._id}
@@ -504,24 +515,67 @@ console.log(guestInfo);
                       bedType={room.bedType}
                       isPopular={true}
                       availableCount={room.availableCount}
+                      isUnavailable={false}
+                      isSoldOut={false}
                       onBookNow={handleBookNow}
                     />
-                  ))
+                  ))}
+
+                  {/* Limited Availability Rooms */}
+                  {unavailableRooms.map((room) => (
+                    <RoomCard
+                      key={room._id}
+                      id={room._id}
+                      name={room.type}
+                      image={room.image ? room.image : ""}
+                      description={`Room Size: ${room.roomSize || "N/A"}`}
+                      price={room.pricePerNight}
+                      originalPrice={room.discount ? room.pricePerNight + room.discount : undefined}
+                      features={[]}
+                      capacity={room.maxGuests}
+                      bedType={room.bedType}
+                      isPopular={true}
+                      availableCount={room.availableCount}
+                      isUnavailable={true}
+                      isSoldOut={false}
+                    />
+                  ))}
+
+                  {/* Sold Out Rooms */}
+                  {soldOutRooms.map((room) => (
+                    <RoomCard
+                      key={room._id}
+                      id={room._id}
+                      name={room.type}
+                      image={room.image ? room.image : ""}
+                      description={`Room Size: ${room.roomSize || "N/A"}`}
+                      price={room.pricePerNight}
+                      originalPrice={room.discount ? room.pricePerNight + room.discount : undefined}
+                      features={[]}
+                      capacity={room.maxGuests}
+                      bedType={room.bedType}
+                      isPopular={true}
+                      availableCount={room.availableCount}
+                      isUnavailable={false}
+                      isSoldOut={true}
+                    />
+                  ))}
+                </>
               ) : (
-                <div>No available rooms found for the selected criteria.</div>
+                <div>No rooms available for the selected criteria.</div>
               )}
 
-              {/* Show message if no available rooms */}
+              {/* Show message if no fully available rooms */}
               {!roomsLoading && !roomsError && roomsData.length > 0 &&
                filteredRooms.length === 0 && (
                 <div className="text-center p-6 bg-gray-50 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {maxAvailableRooms < rooms ? "Insufficient Room Availability" : "No Available Rooms"}
+                    {maxAvailableRooms < rooms ? "Insufficient Room Availability" : "No Fully Available Rooms"}
                   </h3>
                   <p className="text-gray-600">
                     {maxAvailableRooms < rooms
                       ? `Only ${maxAvailableRooms} rooms left. Please reduce the number of rooms.`
-                      : "No rooms match the selected number of guests. Please adjust the number of guests or try different dates."
+                      : "No rooms are fully available. You may still see rooms with limited availability above - contact the hotel to check specific availability."
                     }
                   </p>
                 </div>

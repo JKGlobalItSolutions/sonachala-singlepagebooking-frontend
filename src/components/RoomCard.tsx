@@ -15,7 +15,9 @@ interface RoomCardProps {
   bedType: string;
   isPopular?: boolean;
   availableCount?: number;
-  onBookNow: (roomId: string) => void;
+  isUnavailable?: boolean;
+  isSoldOut?: boolean;
+  onBookNow?: (roomId: string) => void;
 }
 
 export const RoomCard = ({
@@ -30,6 +32,8 @@ export const RoomCard = ({
   bedType,
   isPopular,
   availableCount,
+  isUnavailable,
+  isSoldOut,
   onBookNow,
 }: RoomCardProps) => {
   const getFeatureIcon = (feature: string) => {
@@ -47,8 +51,10 @@ export const RoomCard = ({
     }
   };
 
+  const isBookable = !isUnavailable && !isSoldOut && onBookNow;
+
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className={`overflow-hidden transition-shadow duration-300 ${isBookable ? 'hover:shadow-lg' : 'opacity-60'}`}>
       <div className="md:flex">
         <div className="md:w-1/3 relative">
           <img
@@ -56,16 +62,32 @@ export const RoomCard = ({
             alt={name}
             className="w-full h-48 md:h-full object-cover"
           />
-          {availableCount !== undefined && availableCount > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute top-3 left-3 bg-destructive text-destructive-foreground"
+          {isSoldOut && (
+            <Badge
+              variant="destructive"
+              className="absolute top-3 left-3 bg-red-600 text-white"
+            >
+              Sold Out
+            </Badge>
+          )}
+          {isUnavailable && !isSoldOut && (
+            <Badge
+              variant="secondary"
+              className="absolute top-3 left-3 bg-orange-500 text-white"
+            >
+              Limited Availability
+            </Badge>
+          )}
+          {availableCount !== undefined && availableCount > 0 && !isUnavailable && !isSoldOut && (
+            <Badge
+              variant="destructive"
+              className="absolute top-3 left-3 bg-green-600 text-white"
             >
               Only {availableCount} left
             </Badge>
           )}
         </div>
-        
+
         <CardContent className="md:w-2/3 p-6">
           <div className="flex justify-between items-start mb-3">
             <div>
@@ -84,7 +106,7 @@ export const RoomCard = ({
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
@@ -95,7 +117,7 @@ export const RoomCard = ({
               <span>{bedType}</span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-2 mb-4">
             {(features ?? []).map((feature, index) => (
               <div key={index} className="flex items-center gap-2 text-sm">
@@ -104,7 +126,7 @@ export const RoomCard = ({
               </div>
             ))}
           </div>
-          
+
           <div className="flex justify-between items-center">
             <div className="text-sm text-muted-foreground">
               <div>✓ Free cancellation up to 1 day before</div>
@@ -112,10 +134,11 @@ export const RoomCard = ({
             </div>
             <Button
               variant="luxury"
-              onClick={() => onBookNow(id)}
+              onClick={() => isBookable && onBookNow(id)}
               className="ml-4"
+              disabled={!isBookable}
             >
-              Book Now
+              {isSoldOut ? 'Sold Out' : isUnavailable ? 'Check Availability' : 'Book Now'}
             </Button>
           </div>
         </CardContent>
