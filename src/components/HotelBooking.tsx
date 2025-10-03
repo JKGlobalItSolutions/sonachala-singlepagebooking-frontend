@@ -29,6 +29,7 @@ interface Room {
   _id?: string;
   hotel?: string;
   type?: string;
+  roomDescription?: string;
   totalRooms?: number;
   pricePerNight?: number;
   bedType?: string;
@@ -519,6 +520,7 @@ console.log(guestInfo);
                       name={room.type}
                       image={room.image ? room.image : ""}
                       description={`Room Size: ${room.roomSize || "N/A"}`}
+                      roomDescription={room.roomDescription || ""}
                       price={room.pricePerNight}
                       originalPrice={room.discount ? room.pricePerNight + room.discount : undefined}
                       features={[]}
@@ -540,6 +542,7 @@ console.log(guestInfo);
                       name={room.type}
                       image={room.image ? room.image : ""}
                       description={`Room Size: ${room.roomSize || "N/A"}`}
+                      roomDescription={room.roomDescription || ""}
                       price={room.pricePerNight}
                       originalPrice={room.discount ? room.pricePerNight + room.discount : undefined}
                       features={[]}
@@ -560,6 +563,7 @@ console.log(guestInfo);
                       name={room.type}
                       image={room.image ? room.image : ""}
                       description={`Room Size: ${room.roomSize || "N/A"}`}
+                      roomDescription={room.roomDescription || ""}
                       price={room.pricePerNight}
                       originalPrice={room.discount ? room.pricePerNight + room.discount : undefined}
                       features={[]}

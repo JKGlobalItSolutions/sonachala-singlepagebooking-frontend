@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Bed, Wifi, Car, Coffee, ShowerHead } from "lucide-react";
+import { Users, Bed, Wifi, Car, Coffee, ShowerHead, AlertTriangle } from "lucide-react";
 
 interface RoomCardProps {
   id: string;
   name: string;
   image: string;
   description: string;
+  roomDescription: string;
   price: number;
   originalPrice?: number;
   features: string[];
@@ -25,6 +26,7 @@ export const RoomCard = ({
   name,
   image,
   description,
+  roomDescription,
   price,
   originalPrice,
   features,
@@ -60,16 +62,8 @@ export const RoomCard = ({
           <img
             src={image}
             alt={name}
-            className="w-full h-48 md:h-full object-cover"
+            className="w-50 h-50 md:h-full object-cover"
           />
-          {isSoldOut && (
-            <Badge
-              variant="destructive"
-              className="absolute top-3 left-3 bg-red-600 text-white"
-            >
-              Sold Out
-            </Badge>
-          )}
           {isUnavailable && !isSoldOut && (
             <Badge
               variant="secondary"
@@ -92,7 +86,7 @@ export const RoomCard = ({
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="text-xl font-bold text-premium mb-1">{name}</h3>
-              <p className="text-sm text-muted-foreground mb-2">{description}</p>
+              <p className="text-sm text-muted-foreground mb-2">{roomDescription}</p>
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-premium">
@@ -143,6 +137,12 @@ export const RoomCard = ({
           </div>
         </CardContent>
       </div>
+      {isSoldOut && (
+        <div className="bg-red-50 text-red-800 p-3 flex items-center justify-center border-t">
+          <AlertTriangle className="h-4 w-4 mr-2" />
+          <span className="text-sm font-medium">{name} is sold out on selected dates</span>
+        </div>
+      )}
     </Card>
   );
 };
