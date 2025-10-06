@@ -430,7 +430,7 @@ export const ReservationSummary = ({
                     Processing...
                   </>
                 ) : (
-                  "Proceed to Pay"
+                  "Complete Booking"
                 )}
               </Button>
             </div>

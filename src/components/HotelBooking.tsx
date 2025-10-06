@@ -9,7 +9,7 @@ import { GuestForm } from "./GuestForm";
 import { PaymentSection } from "./PaymentSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Shield, Clock, Users, Camera, Map, Info, CheckCircle } from "lucide-react";
+import { MapPin, Shield, Clock, Users, Camera, Map, Info, CheckCircle, CreditCard, Phone, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 
@@ -928,7 +928,10 @@ console.log(guestInfo);
 
                 <div className="space-y-4">
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-base">Payment Terms</h4>
+                    <h4 className="font-semibold text-base flex items-center gap-2">
+                      <CreditCard className="w-5 h-5 text-luxury" />
+                      Payment Terms
+                    </h4>
                     <div className="text-sm text-muted-foreground space-y-2">
                       <p>Full payment required for booking confirmation</p>
 
@@ -938,7 +941,10 @@ console.log(guestInfo);
                   </div>
 
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-base">Additional Policies</h4>
+                    <h4 className="font-semibold text-base flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 text-luxury" />
+                      Additional Policies
+                    </h4>
                     <div className="text-sm text-muted-foreground space-y-2">
                       <p>No pets allowed</p>
                       <p>Smoking prohibited in rooms</p>
@@ -950,7 +956,10 @@ console.log(guestInfo);
 
                 <div className="space-y-4">
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-base">Contact Information</h4>
+                    <h4 className="font-semibold text-base flex items-center gap-2">
+                      <Phone className="w-5 h-5 text-luxury" />
+                      Contact Information
+                    </h4>
                     <div className="text-sm text-muted-foreground space-y-2">
                       <p>Phone: {hotelLoading ? "Loading..." : (hotel?.contact || "+91-XXXX-XXXXXX")}</p>
                       <p>Email: info@sonachalahotel.com</p>
